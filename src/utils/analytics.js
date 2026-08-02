@@ -3,8 +3,21 @@ const VIEWS_KEY = 'fabian_portfolio_views_v1';
 const LOGS_KEY = 'fabian_portfolio_logs_v1';
 const PIN_KEY = 'fabian_admin_pin_v1';
 
-// Default Admin PIN (can be changed in Admin Dashboard)
 const DEFAULT_PIN = '2026';
+let cachedIP = 'Mengambil IP...';
+
+// Fetch Public IP Address
+export async function initIPFetcher() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    if (res.ok) {
+      const data = await res.json();
+      cachedIP = data.ip || '127.0.0.1';
+    }
+  } catch (err) {
+    cachedIP = 'Localhost / Offline';
+  }
+}
 
 // 1. Get or Initialize Page Views
 export function trackPageView() {
@@ -12,7 +25,6 @@ export function trackPageView() {
     const rawViews = localStorage.getItem(VIEWS_KEY);
     let viewsData = rawViews ? JSON.parse(rawViews) : { total: 0, daily: {} };
 
-    // Format current date YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];
 
     viewsData.total = (viewsData.total || 0) + 1;
@@ -20,8 +32,8 @@ export function trackPageView() {
 
     localStorage.setItem(VIEWS_KEY, JSON.stringify(viewsData));
 
-    // Also log this view in activity log
-    logActivity('Page View', `Pengunjung membuka portfolio (Total: ${viewsData.total})`);
+    // Log this view as Admin action
+    logActivity('Page View', `Admin (Fabian) membuka website portfolio (Total Kunjungan: ${viewsData.total})`);
 
     return viewsData;
   } catch (err) {
@@ -30,7 +42,7 @@ export function trackPageView() {
   }
 }
 
-// 2. Log Specific User Activity / Event
+// 2. Log Specific User/Admin Activity with Full Details
 export function logActivity(action, details = '') {
   try {
     const rawLogs = localStorage.getItem(LOGS_KEY);
@@ -38,13 +50,11 @@ export function logActivity(action, details = '') {
 
     const newLog = {
       id: Date.now() + Math.random().toString(36).substr(2, 4),
-      timestamp: new Date().toLocaleString('id-ID', {
-        dateStyle: 'short',
-        timeStyle: 'medium',
-      }),
+      timestamp: getFullIndonesianTimestamp(),
+      ip: cachedIP,
       action,
       details,
-      device: getDeviceType(),
+      deviceInfo: getDetailedDevice(),
     };
 
     // Keep latest 100 logs
@@ -100,10 +110,41 @@ export function clearAnalyticsLogs() {
   localStorage.removeItem(VIEWS_KEY);
 }
 
-// Helper: Detect Device Type
-function getDeviceType() {
+// Helper: Full Indonesian Timestamp (Hari, Tanggal Bulan Tahun - Jam:Menit:Detik WIB)
+function getFullIndonesianTimestamp() {
+  const now = new Date();
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+  const dayName = days[now.getDay()];
+  const dateNum = String(now.getDate()).padStart(2, '0');
+  const monthName = months[now.getMonth()];
+  const year = now.getFullYear();
+
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+
+  return `${dayName}, ${dateNum} ${monthName} ${year} - ${hours}:${minutes}:${seconds} WIB`;
+}
+
+// Helper: Detailed Device, OS, Browser & Screen Info
+function getDetailedDevice() {
   const ua = navigator.userAgent;
-  if (/mobile/i.test(ua)) return 'Mobile';
-  if (/ipad|tablet/i.test(ua)) return 'Tablet';
-  return 'Desktop';
+  let os = 'Windows';
+  if (ua.includes('Macintosh')) os = 'macOS';
+  else if (ua.includes('Linux') && !ua.includes('Android')) os = 'Linux';
+  else if (ua.includes('Android')) os = 'Android HP';
+  else if (ua.includes('iPhone')) os = 'iPhone iOS';
+  else if (ua.includes('iPad')) os = 'iPad iOS';
+
+  let browser = 'Browser';
+  if (ua.includes('Edg/')) browser = 'Edge';
+  else if (ua.includes('Chrome/')) browser = 'Chrome';
+  else if (ua.includes('Firefox/')) browser = 'Firefox';
+  else if (ua.includes('Safari/') && !ua.includes('Chrome/')) browser = 'Safari';
+
+  const screenRes = `${window.screen.width}x${window.screen.height}`;
+
+  return `${os} (${browser}) • ${screenRes}`;
 }

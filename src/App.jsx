@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import ThreeBackground from './components/ThreeBackground';
 import AdminDashboard from './components/AdminDashboard';
 import LanguageSelector from './components/LanguageSelector';
-import { trackPageView, logActivity } from './utils/analytics';
+import { trackPageView, logActivity, initIPFetcher } from './utils/analytics';
 import { translations } from './utils/i18n';
 import { 
   Code2, 
@@ -51,12 +51,14 @@ export default function App() {
   const handleSelectLang = (langCode) => {
     setCurrentLang(langCode);
     localStorage.setItem('fabian_lang', langCode);
-    logActivity('Change Language', `Pengunjung mengganti bahasa ke ${langCode.toUpperCase()}`);
+    logActivity('Change Language', `Admin mengganti bahasa ke ${langCode.toUpperCase()}`);
   };
 
   useEffect(() => {
-    // Automatically track Page View on initial load
-    trackPageView();
+    // Initialize IP address fetcher & automatically track Page View
+    initIPFetcher().then(() => {
+      trackPageView();
+    });
 
     // Keyboard shortcut: Ctrl + Shift + A toggles Private Admin Panel
     const handleKeyDown = (e) => {
@@ -71,7 +73,7 @@ export default function App() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    logActivity('Submit Contact Form', `Nama: ${formData.name}, Email: ${formData.email}`);
+    logActivity('Submit Contact Form', `Admin mengirim pesan (Nama: ${formData.name}, Email: ${formData.email})`);
     setFormSubmitted(true);
     setFormData({ name: '', email: '', message: '' });
     setTimeout(() => setFormSubmitted(false), 5000);
@@ -518,7 +520,7 @@ export default function App() {
               href="https://github.com/FabianOminkk" 
               target="_blank" 
               rel="noreferrer" 
-              onClick={() => logActivity('Click GitHub', 'Pengunjung mengklik link GitHub')}
+              onClick={() => logActivity('Click GitHub', 'Admin mengklik link GitHub profil')}
               className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" 
               title="GitHub FabianOminkk"
             >
@@ -529,7 +531,7 @@ export default function App() {
               href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" 
               target="_blank" 
               rel="noreferrer" 
-              onClick={() => logActivity('Click LinkedIn', 'Pengunjung mengklik link LinkedIn')}
+              onClick={() => logActivity('Click LinkedIn', 'Admin mengklik link LinkedIn profil')}
               className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" 
               title="LinkedIn Fabian Nazhif"
             >
