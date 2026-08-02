@@ -119,8 +119,9 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Web3Forms API key — must be set in Vercel env vars as VITE_WEB3FORMS_KEY
-  const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
+  // Web3Forms API key — set via VITE_WEB3FORMS_KEY env var, with hardcoded fallback
+  // (Web3Forms keys are safe to expose: scoped to one destination email only)
+  const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || 'c95dbeca-4dca-4b49-98bb-195367cd3b7b';
   const hasValidKey = WEB3FORMS_KEY &&
     WEB3FORMS_KEY !== 'your_access_key_here' &&
     WEB3FORMS_KEY !== '00000000-0000-0000-0000-000000000000';
