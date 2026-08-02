@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import ThreeBackground from './components/ThreeBackground';
 import AdminDashboard from './components/AdminDashboard';
+import LanguageSelector from './components/LanguageSelector';
 import { trackPageView, logActivity } from './utils/analytics';
+import { translations } from './utils/i18n';
 import { 
   Code2, 
   Boxes, 
@@ -35,19 +37,22 @@ function LinkedinIcon({ size = 18 }) {
   );
 }
 
-function TwitterIcon({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+  // Multi-Language State (Default: Bahasa Indonesia, remembers choice in localStorage)
+  const [currentLang, setCurrentLang] = useState(() => localStorage.getItem('fabian_lang') || 'id');
+
+  const t = translations[currentLang] || translations.id;
+
+  const handleSelectLang = (langCode) => {
+    setCurrentLang(langCode);
+    localStorage.setItem('fabian_lang', langCode);
+    logActivity('Change Language', `Pengunjung mengganti bahasa ke ${langCode.toUpperCase()}`);
+  };
 
   useEffect(() => {
     // Automatically track Page View on initial load
@@ -79,7 +84,7 @@ export default function App() {
 
       {/* Header / Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4">
-        <nav className="max-w-7xl mx-auto glass-panel rounded-2xl px-6 py-3.5 flex items-center justify-between shadow-2xl">
+        <nav className="max-w-7xl mx-auto glass-panel rounded-2xl px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-2xl">
           {/* Brand Logo */}
           <a href="#" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 p-[2px] transition-transform group-hover:scale-105">
@@ -94,19 +99,25 @@ export default function App() {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#about" className="hover:text-cyan-400 transition-colors">Tentang</a>
-            <a href="#skills" className="hover:text-cyan-400 transition-colors">Keahlian</a>
-            <a href="#projects" className="hover:text-cyan-400 transition-colors">Proyek</a>
-            <a href="#contact" className="hover:text-cyan-400 transition-colors">Kontak</a>
+            <a href="#about" className="hover:text-cyan-400 transition-colors">{t.navAbout}</a>
+            <a href="#skills" className="hover:text-cyan-400 transition-colors">{t.navSkills}</a>
+            <a href="#projects" className="hover:text-cyan-400 transition-colors">{t.navProjects}</a>
+            <a href="#contact" className="hover:text-cyan-400 transition-colors">{t.navContact}</a>
           </div>
 
-          {/* Header Action Button */}
-          <div className="flex items-center gap-4">
+          {/* Header Actions (Language Selector + CTA Button + Mobile Toggle) */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* ASEAN Language Dropdown Selector */}
+            <LanguageSelector 
+              currentLang={currentLang} 
+              onSelectLang={handleSelectLang} 
+            />
+
             <a 
               href="#contact" 
               className="hidden sm:inline-flex px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold hover:shadow-lg hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all"
             >
-              Hubungi Saya
+              {t.navContactBtn}
             </a>
 
             <button 
@@ -122,16 +133,16 @@ export default function App() {
         {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
           <div className="md:hidden max-w-7xl mx-auto mt-2 glass-panel rounded-2xl p-6 flex flex-col gap-4 text-center text-sm font-medium animate-fadeIn">
-            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">Tentang</a>
-            <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">Keahlian</a>
-            <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">Proyek</a>
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">Kontak</a>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">{t.navAbout}</a>
+            <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">{t.navSkills}</a>
+            <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">{t.navProjects}</a>
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="py-2 hover:text-cyan-400 transition-colors">{t.navContact}</a>
             <a 
               href="#contact" 
               onClick={() => setMobileMenuOpen(false)}
               className="mt-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold"
             >
-              Hubungi Saya
+              {t.navContactBtn}
             </a>
           </div>
         )}
@@ -148,22 +159,22 @@ export default function App() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
-              Tersedia untuk Pekerjaan & Proyek Freelance
+              {t.heroStatus}
             </div>
 
             {/* Main Headline */}
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-6xl md:text-7xl font-heading font-extrabold tracking-tight leading-tight text-white">
-                Halo, Saya <span className="text-gradient">Fabian</span>
+                {t.heroGreeting} <span className="text-gradient">Fabian</span>
               </h1>
               <p className="text-xl sm:text-2xl md:text-3xl font-heading font-semibold text-slate-300">
-                Full-Stack Developer & <span className="text-cyan-400">3D Web Specialist</span>
+                {t.heroRole1} <span className="text-cyan-400">{t.heroRole2}</span>
               </p>
             </div>
 
             {/* Subtext */}
             <p className="max-w-2xl mx-auto text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
-              Saya membantu bisnis & kreator mewujudkan produk digital impian—menghadirkan pengalaman web 3D interaktif yang memukau, super cepat, dan berkonversi tinggi untuk memikat pelanggan Anda.
+              {t.heroSubtext}
             </p>
 
             {/* Action CTAs */}
@@ -172,7 +183,7 @@ export default function App() {
                 href="#projects" 
                 className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-semibold text-base shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all flex items-center justify-center gap-3 group"
               >
-                <span>Lihat Portfolio</span>
+                <span>{t.heroCtaProject}</span>
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
               <a 
@@ -214,8 +225,8 @@ export default function App() {
         <section id="about" className="py-24 px-4 sm:px-6 relative">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-400">Tentang Saya</h2>
-              <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">Passionate Code & Creative Design</h3>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-400">{t.aboutBadge}</h2>
+              <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">{t.aboutTitle}</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-cyan-400 mx-auto rounded-full"></div>
             </div>
 
@@ -223,27 +234,27 @@ export default function App() {
               {/* Text Card */}
               <div className="md:col-span-7 glass-panel p-8 sm:p-10 rounded-3xl space-y-6">
                 <h4 className="text-2xl font-heading font-bold text-slate-100">
-                  Mengubah ide kompleks menjadi solusi digital interaktif.
+                  {t.aboutSub}
                 </h4>
                 <p className="text-slate-300 leading-relaxed">
-                  Saya adalah seorang software developer yang berfokus pada pengembangan aplikasi web interaktif, responsif, dan estetis. Berpengalaman dalam ekosistem JavaScript modern, framework frontend, backend Node.js, serta grafik 3D berbasis WebGL/Three.js.
+                  {t.aboutP1}
                 </p>
                 <p className="text-slate-400 leading-relaxed">
-                  Filosofi kerja saya adalah mengutamakan <strong className="text-slate-200">user experience (UX)</strong> yang mulus, arsitektur kode yang bersih (clean code), serta inovasi visual yang menarik perhatian penggunanya.
+                  {t.aboutP2}
                 </p>
 
                 <div className="pt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 border-t border-white/10">
                   <div>
                     <span className="block text-2xl font-heading font-bold text-cyan-400">3+</span>
-                    <span className="text-xs text-slate-400">Tahun Pengalaman</span>
+                    <span className="text-xs text-slate-400">{t.aboutExp}</span>
                   </div>
                   <div>
                     <span className="block text-2xl font-heading font-bold text-indigo-400">15+</span>
-                    <span className="text-xs text-slate-400">Proyek Selesai</span>
+                    <span className="text-xs text-slate-400">{t.aboutCompleted}</span>
                   </div>
                   <div>
                     <span className="block text-2xl font-heading font-bold text-purple-400">100%</span>
-                    <span className="text-xs text-slate-400">Komitmen Kualitas</span>
+                    <span className="text-xs text-slate-400">{t.aboutQuality}</span>
                   </div>
                 </div>
               </div>
@@ -255,8 +266,8 @@ export default function App() {
                     <Code2 size={24} />
                   </div>
                   <div>
-                    <h5 className="font-heading font-semibold text-white mb-1">Frontend Engineering</h5>
-                    <p className="text-xs text-slate-400">Pengembangan UI responsif, cepat, & aksesibel menggunakan React & Tailwind CSS.</p>
+                    <h5 className="font-heading font-semibold text-white mb-1">{t.featFe}</h5>
+                    <p className="text-xs text-slate-400">{t.featFeDesc}</p>
                   </div>
                 </div>
 
@@ -265,8 +276,8 @@ export default function App() {
                     <Boxes size={24} />
                   </div>
                   <div>
-                    <h5 className="font-heading font-semibold text-white mb-1">3D & Interactive Graphics</h5>
-                    <p className="text-xs text-slate-400">Visualisasi 3D interaktif pada browser menggunakan Three.js & WebGL.</p>
+                    <h5 className="font-heading font-semibold text-white mb-1">{t.feat3d}</h5>
+                    <p className="text-xs text-slate-400">{t.feat3dDesc}</p>
                   </div>
                 </div>
 
@@ -275,8 +286,8 @@ export default function App() {
                     <Server size={24} />
                   </div>
                   <div>
-                    <h5 className="font-heading font-semibold text-white mb-1">Backend & API Integration</h5>
-                    <p className="text-xs text-slate-400">Perancangan RESTful API, integrasi database, dan layanan cloud yang scalable.</p>
+                    <h5 className="font-heading font-semibold text-white mb-1">{t.featBe}</h5>
+                    <p className="text-xs text-slate-400">{t.featBeDesc}</p>
                   </div>
                 </div>
               </div>
@@ -288,8 +299,8 @@ export default function App() {
         <section id="skills" className="py-24 px-4 sm:px-6 relative">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-purple-400">Keahlian & Teknologi</h2>
-              <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">Stack Teknologi Utama</h3>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-purple-400">{t.skillsBadge}</h2>
+              <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">{t.skillsTitle}</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-cyan-400 mx-auto rounded-full"></div>
             </div>
 
@@ -341,8 +352,8 @@ export default function App() {
         <section id="projects" className="py-24 px-4 sm:px-6 relative">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-3 mb-16">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-400">Portfolio</h2>
-              <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">Proyek Pilihan</h3>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-400">{t.projBadge}</h2>
+              <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">{t.projTitle}</h3>
               <div className="w-16 h-1 bg-gradient-to-r from-cyan-400 to-indigo-500 mx-auto rounded-full"></div>
             </div>
 
@@ -359,7 +370,7 @@ export default function App() {
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
                     <h4 className="font-heading font-bold text-xl text-white group-hover:text-cyan-400 transition-colors">3D Product Showcase</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">Aplikasi interaktif 3D preview produk menggunakan Three.js dengan kontrol rotasi 360 derajat dan pencahayaan dinamis.</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{t.proj1Desc}</p>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-2">
                     <span className="px-2.5 py-1 rounded-md bg-white/5 text-[11px] text-slate-300">Three.js</span>
@@ -381,7 +392,7 @@ export default function App() {
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
                     <h4 className="font-heading font-bold text-xl text-white group-hover:text-cyan-400 transition-colors">Analytics Dashboard</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">Dashboard manajemen data dengan grafik real-time, filter kustom, dan mode gelap modern berbasis React.</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{t.proj2Desc}</p>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-2">
                     <span className="px-2.5 py-1 rounded-md bg-white/5 text-[11px] text-slate-300">React</span>
@@ -403,7 +414,7 @@ export default function App() {
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
                     <h4 className="font-heading font-bold text-xl text-white group-hover:text-cyan-400 transition-colors">SaaS Landing Page</h4>
-                    <p className="text-xs text-slate-400 leading-relaxed">Landing page modern berkecepatan tinggi dengan mikro-interaksi smooth scroll dan integrasi form ke backend.</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{t.proj3Desc}</p>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-2">
                     <span className="px-2.5 py-1 rounded-md bg-white/5 text-[11px] text-slate-300">Vite</span>
@@ -421,15 +432,15 @@ export default function App() {
           <div className="max-w-4xl mx-auto">
             <div className="glass-panel p-8 sm:p-12 rounded-3xl space-y-8 relative overflow-hidden">
               <div className="text-center space-y-3">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-400">Kontak</h2>
-                <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">Mari Bekerja Sama</h3>
-                <p className="text-slate-400 text-sm max-w-xl mx-auto">Punya ide proyek menarik atau ingin berdiskusi? Kirim pesan dan saya akan segera membalasnya.</p>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-400">{t.contactBadge}</h2>
+                <h3 className="text-3xl sm:text-4xl font-heading font-bold text-white">{t.contactTitle}</h3>
+                <p className="text-slate-400 text-sm max-w-xl mx-auto">{t.contactSub}</p>
               </div>
 
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label htmlFor="name" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Anda</label>
+                    <label htmlFor="name" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{t.contactName}</label>
                     <input 
                       type="text" 
                       id="name" 
@@ -437,11 +448,11 @@ export default function App() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="John Doe" 
-                      className="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 text-base sm:text-sm focus:outline-none focus:border-indigo-500 transition-colors"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Email Anda</label>
+                    <label htmlFor="email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{t.contactEmail}</label>
                     <input 
                       type="email" 
                       id="email" 
@@ -449,21 +460,21 @@ export default function App() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="john@example.com" 
-                      className="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 text-base sm:text-sm focus:outline-none focus:border-indigo-500 transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="message" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Pesan</label>
+                  <label htmlFor="message" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">{t.contactMsg}</label>
                   <textarea 
                     id="message" 
                     rows={4} 
                     required 
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Tuliskan pesan atau detail proyek Anda di sini..." 
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none"
+                    placeholder={t.contactPlaceholderMsg} 
+                    className="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 text-base sm:text-sm focus:outline-none focus:border-indigo-500 transition-colors resize-none"
                   ></textarea>
                 </div>
 
@@ -472,14 +483,14 @@ export default function App() {
                   className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-bold text-base shadow-lg shadow-indigo-500/30 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                 >
                   <Send size={18} />
-                  <span>Kirim Pesan</span>
+                  <span>{t.contactSubmit}</span>
                 </button>
               </form>
 
               {formSubmitted && (
                 <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-center text-sm flex items-center justify-center gap-2 animate-fadeIn">
                   <CheckCircle size={18} />
-                  <span>Pesan Anda berhasil dikirim! Saya akan membalas segera.</span>
+                  <span>{t.contactSuccess}</span>
                 </div>
               )}
             </div>
@@ -491,7 +502,7 @@ export default function App() {
       <footer className="py-8 border-t border-white/10 px-4 sm:px-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <p>&copy; 2026 Fabian Nazhif. All rights reserved. Built with React & Three.js.</p>
+            <p>&copy; {t.footerCopy}</p>
             {/* Secret Private Admin Button (Clickable lock) */}
             <button 
               onClick={() => setIsAdminOpen(true)}
