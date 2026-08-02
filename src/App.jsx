@@ -18,7 +18,8 @@ import {
   Layers,
   Cpu,
   Globe,
-  Lock
+  Lock,
+  GraduationCap
 } from 'lucide-react';
 
 function GithubIcon({ size = 18 }) {
@@ -261,8 +262,24 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Feature Highlight Cards */}
+              {/* Feature Highlight & Education Cards */}
               <div className="md:col-span-5 space-y-4">
+                {/* Education & Age Highlight Card */}
+                <div className="glass-card p-6 rounded-2xl flex items-start gap-4 border border-cyan-500/30 bg-gradient-to-r from-cyan-950/20 via-slate-900/40 to-indigo-950/20">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
+                    <GraduationCap size={24} />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="font-heading font-bold text-white text-base">{t.aboutEduSchool}</h5>
+                      <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold shrink-0">
+                        {t.aboutEduAgeLabel}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 font-semibold">{t.aboutEduDegree}</p>
+                  </div>
+                </div>
+
                 <div className="glass-card p-6 rounded-2xl flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shrink-0">
                     <Code2 size={24} />
