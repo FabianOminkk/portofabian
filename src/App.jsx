@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import ThreeBackground from './components/ThreeBackground';
-import AdminDashboard from './components/AdminDashboard';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import LanguageSelector from './components/LanguageSelector';
 import IntroScreen from './components/IntroScreen';
 import { trackPageView, logActivity, initIPFetcher } from './utils/analytics';
@@ -20,8 +18,14 @@ import {
   Cpu,
   Globe,
   Lock,
-  GraduationCap
+  GraduationCap,
+  Home,
+  FolderGit2,
+  Mail
 } from 'lucide-react';
+
+const ThreeBackground = lazy(() => import('./components/ThreeBackground'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 
 function GithubIcon({ size = 18 }) {
   return (
@@ -127,8 +131,10 @@ export default function App() {
     <div className="relative min-h-screen" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Cinematic Intro Screen (first visit per session) */}
       {showIntro && <IntroScreen onComplete={handleIntroDone} />}
-      {/* 3D WebGL Background */}
-      <ThreeBackground />
+      {/* 3D WebGL Background (Lazy Loaded) */}
+      <Suspense fallback={null}>
+        <ThreeBackground />
+      </Suspense>
 
       {/* Header / Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4">
@@ -583,7 +589,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-white/10 px-4 sm:px-6 text-center text-xs text-slate-500">
+      <footer className="py-8 pb-24 md:pb-8 border-t border-white/10 px-4 sm:px-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <p>&copy; {t.footerCopy}</p>
@@ -624,11 +630,45 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Private Admin Dashboard Modal (PIN Protected) */}
-      <AdminDashboard 
-        isOpen={isAdminOpen} 
-        onClose={() => setIsAdminOpen(false)} 
-      />
+      {/* Modern Floating Bottom Navigation Bar for Mobile (App-Like Experience) */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-40 glass-panel rounded-2xl p-2 flex items-center justify-around shadow-2xl backdrop-blur-2xl bg-slate-950/85 border border-white/15">
+        <a 
+          href="#" 
+          className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all text-[11px] font-medium"
+        >
+          <Home size={18} />
+          <span>Home</span>
+        </a>
+        <a 
+          href="#about" 
+          className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all text-[11px] font-medium"
+        >
+          <User size={18} />
+          <span>About</span>
+        </a>
+        <a 
+          href="#projects" 
+          className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all text-[11px] font-medium"
+        >
+          <FolderGit2 size={18} />
+          <span>Projects</span>
+        </a>
+        <a 
+          href="#contact" 
+          className="flex flex-col items-center gap-1 p-2 text-cyan-400 active:scale-95 transition-all text-[11px] font-bold"
+        >
+          <Mail size={18} />
+          <span>Contact</span>
+        </a>
+      </div>
+
+      {/* Private Admin Dashboard Modal (PIN Protected, Lazy Loaded) */}
+      <Suspense fallback={null}>
+        <AdminDashboard 
+          isOpen={isAdminOpen} 
+          onClose={() => setIsAdminOpen(false)} 
+        />
+      </Suspense>
     </div>
   );
 }
