@@ -9,7 +9,6 @@ import {
   Download, 
   KeyRound, 
   Calendar,
-  Smartphone,
   RefreshCw,
   LogOut,
   Globe,
@@ -30,7 +29,12 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const [newPin, setNewPin] = useState('');
   const [pinChangeSuccess, setPinChangeSuccess] = useState(false);
 
+  // Reset PIN input whenever modal is opened/closed
   useEffect(() => {
+    if (!isOpen) {
+      setPinInput('');
+      setErrorMsg('');
+    }
     if (isOpen && isAuthenticated) {
       refreshData();
     }
