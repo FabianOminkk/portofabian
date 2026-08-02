@@ -22,3 +22,5 @@ my-portfolio/
 *.njsproj
 *.sln
 *.sw?
+
+.vercel

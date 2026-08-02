@@ -6,16 +6,19 @@ const PIN_KEY = 'fabian_admin_pin_v1';
 const DEFAULT_PIN = '2026';
 let cachedIP = 'Mengambil IP...';
 
-// Fetch Public IP Address
+// Fetch Public IP Address (with 2.5s safety timeout)
 export async function initIPFetcher() {
   try {
-    const res = await fetch('https://api.ipify.org?format=json');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+    const res = await fetch('https://api.ipify.org?format=json', { signal: timer.signal });
+    clearTimeout(timer);
     if (res.ok) {
       const data = await res.json();
-      cachedIP = data.ip || '127.0.0.1';
+      cachedIP = data.ip || 'Terproteksi';
     }
   } catch (err) {
-    cachedIP = 'Localhost / Offline';
+    cachedIP = 'Terproteksi / Local';
   }
 }
 
@@ -32,8 +35,8 @@ export function trackPageView() {
 
     localStorage.setItem(VIEWS_KEY, JSON.stringify(viewsData));
 
-    // Log this view as Admin action
-    logActivity('Page View', `Admin (Fabian) membuka website portfolio (Total Kunjungan: ${viewsData.total})`);
+    // Log this view as visitor action
+    logActivity('Kunjungan Web', `Pengunjung membuka website portfolio (Total Kunjungan: ${viewsData.total})`);
 
     return viewsData;
   } catch (err) {

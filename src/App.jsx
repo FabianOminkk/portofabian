@@ -65,7 +65,7 @@ export default function App() {
   const handleSelectLang = (langCode) => {
     setCurrentLang(langCode);
     localStorage.setItem('fabian_lang', langCode);
-    logActivity('Change Language', `Admin mengganti bahasa ke ${langCode.toUpperCase()}`);
+    logActivity('Ganti Bahasa', `Pengunjung mengganti bahasa ke ${langCode.toUpperCase()}`);
   };
 
   useEffect(() => {
@@ -602,7 +602,7 @@ export default function App() {
               href="https://github.com/FabianOminkk" 
               target="_blank" 
               rel="noreferrer" 
-              onClick={() => logActivity('Click GitHub', 'Admin mengklik link GitHub profil')}
+              onClick={() => logActivity('Klik GitHub', 'Pengunjung mengklik link GitHub profil')}
               className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" 
               title="GitHub FabianOminkk"
             >
@@ -613,7 +613,7 @@ export default function App() {
               href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" 
               target="_blank" 
               rel="noreferrer" 
-              onClick={() => logActivity('Click LinkedIn', 'Admin mengklik link LinkedIn profil')}
+              onClick={() => logActivity('Klik LinkedIn', 'Pengunjung mengklik link LinkedIn profil')}
               className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" 
               title="LinkedIn Fabian Nazhif"
             >
