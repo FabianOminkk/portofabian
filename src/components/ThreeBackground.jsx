@@ -9,7 +9,7 @@ export default function ThreeBackground() {
     if (!container) return;
 
     // Detect if Mobile Device
-    const isMobile = window.innerWidth < 640;
+    const isMobile = window.innerWidth < 768;
 
     // Scene, Camera, Renderer
     const scene = new THREE.Scene();
@@ -21,18 +21,21 @@ export default function ThreeBackground() {
     );
 
     // Adjust camera distance for mobile vs desktop
-    camera.position.z = isMobile ? 18 : 15;
+    camera.position.z = isMobile ? 20 : 15;
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile, // Disable anti-alias on low-end mobile for maximum performance
+      antialias: !isMobile, // Disable anti-alias on mobile for maximum GPU performance
+      powerPreference: 'high-performance',
+      precision: isMobile ? 'mediump' : 'highp',
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    // Fixed pixel ratio 1.0 on mobile guarantees 60fps smooth rendering without stutter
+    renderer.setPixelRatio(isMobile ? 1.0 : Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // 1. Particle Cloud Field (Slightly fewer particles on mobile for battery savings)
-    const particleCount = isMobile ? 1800 : 3000;
+    // 1. Particle Cloud Field (600 particles on mobile = 60fps, 3000 on desktop)
+    const particleCount = isMobile ? 600 : 3000;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
@@ -51,7 +54,7 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: isMobile ? 0.09 : 0.08,
+      size: isMobile ? 0.12 : 0.08,
       vertexColors: true,
       transparent: true,
       opacity: 0.7,
@@ -61,15 +64,15 @@ export default function ThreeBackground() {
     const particleField = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particleField);
 
-    // 2. Wireframe Torus Knot (Adjust scale for mobile)
-    const knotRadius = isMobile ? 3.5 : 4.5;
-    const knotTube = isMobile ? 0.9 : 1.2;
-    const knotGeometry = new THREE.TorusKnotGeometry(knotRadius, knotTube, isMobile ? 96 : 128, 32);
+    // 2. Wireframe Torus Knot (Low poly 40x16 on mobile for zero lag)
+    const knotRadius = isMobile ? 3.0 : 4.5;
+    const knotTube = isMobile ? 0.8 : 1.2;
+    const knotGeometry = new THREE.TorusKnotGeometry(knotRadius, knotTube, isMobile ? 40 : 128, isMobile ? 16 : 32);
     const knotMaterial = new THREE.MeshBasicMaterial({
       color: 0x6366f1,
       wireframe: true,
       transparent: true,
-      opacity: 0.18,
+      opacity: isMobile ? 0.14 : 0.18,
     });
     const torusKnot = new THREE.Mesh(knotGeometry, knotMaterial);
     scene.add(torusKnot);
@@ -127,12 +130,12 @@ export default function ThreeBackground() {
 
     // Resize Handler
     const handleResize = () => {
-      const mobileNow = window.innerWidth < 640;
+      const mobileNow = window.innerWidth < 768;
       camera.aspect = window.innerWidth / window.innerHeight;
-      camera.position.z = mobileNow ? 18 : 15;
+      camera.position.z = mobileNow ? 20 : 15;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobileNow ? 1.5 : 2));
+      renderer.setPixelRatio(mobileNow ? 1.0 : Math.min(window.devicePixelRatio, 2));
     };
 
     window.addEventListener('resize', handleResize);

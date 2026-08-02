@@ -15,7 +15,7 @@ export default function IntroScreen({ onComplete }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#07090e] transition-all duration-500 ease-in-out
+      className={`fixed inset-0 w-full h-full min-h-screen z-[99999] flex flex-col items-center justify-center bg-[#07090e] px-4 transition-all duration-500 ease-in-out
         ${phase === 'exit' ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}
       `}
     >
@@ -23,15 +23,15 @@ export default function IntroScreen({ onComplete }) {
       <div
         className={`absolute inset-0 transition-opacity duration-1000 ${phase !== 'init' ? 'opacity-100' : 'opacity-0'}`}
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(99,102,241,0.15) 0%, rgba(6,182,212,0.07) 60%, transparent 100%)',
+          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(99,102,241,0.2) 0%, rgba(6,182,212,0.1) 60%, transparent 100%)',
         }}
       />
 
       {/* Floating particles */}
-      {[...Array(12)].map((_, i) => (
+      {[...Array(14)].map((_, i) => (
         <div
           key={i}
-          className={`absolute rounded-full transition-all duration-[2000ms] ${phase !== 'init' ? 'opacity-60' : 'opacity-0'}`}
+          className={`absolute rounded-full transition-all duration-[2000ms] ${phase !== 'init' ? 'opacity-70' : 'opacity-0'}`}
           style={{
             width: `${Math.random() * 4 + 2}px`,
             height: `${Math.random() * 4 + 2}px`,
@@ -45,7 +45,7 @@ export default function IntroScreen({ onComplete }) {
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center gap-6 select-none">
+      <div className="relative z-10 flex flex-col items-center gap-5 sm:gap-6 select-none text-center max-w-sm sm:max-w-md">
 
         {/* Logo Mark */}
         <div
@@ -63,10 +63,10 @@ export default function IntroScreen({ onComplete }) {
             />
             {/* Logo box */}
             <div
-              className="w-24 h-24 rounded-[22px] flex items-center justify-center relative overflow-hidden shadow-2xl"
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-[20px] sm:rounded-[22px] flex items-center justify-center relative overflow-hidden shadow-2xl mx-auto"
               style={{
                 background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%)',
-                boxShadow: '0 0 60px rgba(99,102,241,0.4), 0 0 120px rgba(6,182,212,0.2)',
+                boxShadow: '0 0 50px rgba(99,102,241,0.5), 0 0 100px rgba(6,182,212,0.3)',
               }}
             >
               {/* Shimmer sweep */}
@@ -77,7 +77,7 @@ export default function IntroScreen({ onComplete }) {
                   animation: 'shimmer 2s ease-in-out infinite',
                 }}
               />
-              <span className="font-heading font-extrabold text-4xl text-white tracking-tight relative z-10">
+              <span className="font-heading font-extrabold text-3xl sm:text-4xl text-white tracking-tight relative z-10">
                 FD
               </span>
             </div>
@@ -90,12 +90,12 @@ export default function IntroScreen({ onComplete }) {
             phase === 'text' || phase === 'bar' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-white tracking-tight">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight">
             Fabian<span style={{ color: '#6366f1' }}>.dev</span>
           </h1>
           <p
-            className="text-slate-400 text-sm sm:text-base font-medium tracking-widest uppercase mt-1.5"
-            style={{ letterSpacing: '0.25em' }}
+            className="text-slate-400 text-xs sm:text-base font-medium tracking-widest uppercase mt-1.5 px-2"
+            style={{ letterSpacing: '0.2em' }}
           >
             Full-Stack Developer & 3D Web Specialist
           </p>
