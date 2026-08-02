@@ -78,7 +78,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
       {/* 3D WebGL Background */}
       <ThreeBackground />
 

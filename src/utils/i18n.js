@@ -1,10 +1,11 @@
 export const LANGUAGES = [
-  { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
-  { code: 'en', name: 'English (ASEAN)', flag: '🇸🇬' },
-  { code: 'ms', name: 'Bahasa Melayu', flag: '🇲🇾' },
-  { code: 'th', name: 'ภาษาไทย (Thai)', flag: '🇹🇭' },
-  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'tl', name: 'Tagalog (Filipino)', flag: '🇵🇭' },
+  { code: 'id', name: 'Bahasa Indonesia', flagCode: 'id' },
+  { code: 'en', name: 'English', flagCode: 'gb' },
+  { code: 'ms', name: 'Bahasa Melayu', flagCode: 'my' },
+  { code: 'ar', name: 'العربية (Arabic)', flagCode: 'sa' },
+  { code: 'th', name: 'ภาษาไทย (Thai)', flagCode: 'th' },
+  { code: 'vi', name: 'Tiếng Việt', flagCode: 'vn' },
+  { code: 'tl', name: 'Tagalog (Filipino)', flagCode: 'ph' },
 ];
 
 export const translations = {
@@ -162,6 +163,58 @@ export const translations = {
     contactSuccess: 'Mesej anda berjaya dihantar! Saya akan membalas tidak lama lagi.',
     
     footerCopy: '2026 Fabian Nazhif. Hak cipta terpelihara. Dibina dengan React & Three.js.',
+  },
+
+  ar: {
+    navAbout: 'عني',
+    navSkills: 'المهارات',
+    navProjects: 'المشاريع',
+    navContact: 'تواصل معي',
+    navContactBtn: 'تواصل معي',
+    
+    heroStatus: 'متاح للعمل والمشاريع الحرة',
+    heroGreeting: 'مرحباً، أنا',
+    heroRole1: 'مطور Full-Stack و',
+    heroRole2: 'خبير ويب ثلاثي الأبعاد 3D',
+    heroSubtext: 'أساعد الشركات والمبتكرين في تحويل أفكارهم إلى منتجات رقمية تفاعلية ثلاثية الأبعاد، سريعة ومبهرة لجذب عملائك.',
+    heroCtaProject: 'عرض الأعمال',
+    
+    aboutBadge: 'نبذة عني',
+    aboutTitle: 'برمجة شغوفة وتصميم إبداعي',
+    aboutSub: 'تحويل الأفكار المعقدة إلى حلول رقمية تفاعلية.',
+    aboutP1: 'أنا مطور برمجيات متخصص في بناء تطبيقات ويب تفاعلية، سريعة وأنيقة. أمتلك خبرة في تقنيات JavaScript الحديثة وReact وNode.js والرسوميات ثلاثية الأبعاد WebGL/Three.js.',
+    aboutP2: 'ترتكز فلسفة عملي على تقديم أفضل تجربة للمستخدم (UX)، وبنية برمجية نظيفة، وابتكار بصري يجذب انتباه الزوار.',
+    aboutExp: 'سنوات خبرة',
+    aboutCompleted: 'مشروع مكتمل',
+    aboutQuality: 'التزام بالجودة',
+    
+    featFe: 'تطوير الواجهات Frontend',
+    featFeDesc: 'بناء واجهات تفاعلية وسريعة باستخدام React وTailwind CSS.',
+    feat3d: 'رسوميات ثلاثية الأبعاد 3D',
+    feat3dDesc: 'عرض بصري تفاعلي ثلاثي الأبعاد في المتصفح باستعمال Three.js وWebGL.',
+    featBe: 'تكامل الخوادم Backend & API',
+    featBeDesc: 'تصميم RESTful APIs وقواعد البيانات والسحابية.',
+    
+    skillsBadge: 'المهارات والتقنيات',
+    skillsTitle: 'التقنيات الأساسية',
+    
+    projBadge: 'المشاريع',
+    projTitle: 'أعمال مختارة',
+    proj1Desc: 'تطبيق تفاعلي لعرض المنتجات ثلاثي الأبعاد بزاوبة 360 درجة وإضاءة ديناميكية باستعمال Three.js.',
+    proj2Desc: 'لوحة تحكم لإدارة البيانات ورسوم بيانية في الوقت الفعلي باستعمال React.',
+    proj3Desc: 'صفحة هبوط SaaS حديثة فائقة السرعة مع تفاعلات سلسة وتكامل النماذج.',
+    
+    contactBadge: 'التواصل',
+    contactTitle: 'دعنا نعمل معاً',
+    contactSub: 'هل لديك فكرة مشروع مميزة؟ أرسل لي رسالة وسأرد عليك في أقرب وقت.',
+    contactName: 'اسمك',
+    contactEmail: 'بريدك الإلكتروني',
+    contactMsg: 'الرسالة',
+    contactPlaceholderMsg: 'اكتب رسالتك أو تفاصيل مشروعك هنا...',
+    contactSubmit: 'إرسال الرسالة',
+    contactSuccess: 'تم إرسال رسالتك بنجاح! سأقوم بالرد عليك قريباً.',
+    
+    footerCopy: '2026 Fabian Nazhif. جميع الحقوق محفوظة. تم التطوير باستخدام React & Three.js.',
   },
 
   th: {
