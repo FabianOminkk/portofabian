@@ -45,6 +45,7 @@ function LinkedinIcon({ size = 18 }) {
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -84,6 +85,45 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Track active section for mobile bottom nav via IntersectionObserver
+  useEffect(() => {
+    const sectionIds = ['contact', 'projects', 'about'];
+    const observers = [];
+
+    // Default to 'home' — only override when a named section is >= 40% visible
+    const visibilityMap = {};
+
+    const updateActive = () => {
+      // Priority order: whichever section is most visible wins
+      // If none are sufficiently visible, fall back to 'home'
+      let best = null;
+      let bestRatio = 0.15; // threshold
+      for (const id of sectionIds) {
+        if ((visibilityMap[id] || 0) > bestRatio) {
+          bestRatio = visibilityMap[id];
+          best = id;
+        }
+      }
+      setActiveSection(best || 'home');
+    };
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          visibilityMap[id] = entry.intersectionRatio;
+          updateActive();
+        },
+        { threshold: [0, 0.15, 0.3, 0.5, 0.75, 1.0] }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+
+    return () => observers.forEach((obs) => obs.disconnect());
   }, []);
 
   const handleFormSubmit = async (e) => {
@@ -628,36 +668,39 @@ export default function App() {
       </footer>
 
       {/* Modern Floating Bottom Navigation Bar for Mobile (App-Like Experience) */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 z-40 glass-panel rounded-2xl p-2 flex items-center justify-around shadow-2xl backdrop-blur-2xl bg-slate-950/85 border border-white/15">
-        <a 
-          href="#" 
-          className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all text-[11px] font-medium"
-        >
-          <Home size={18} />
-          <span>Home</span>
-        </a>
-        <a 
-          href="#about" 
-          className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all text-[11px] font-medium"
-        >
-          <User size={18} />
-          <span>About</span>
-        </a>
-        <a 
-          href="#projects" 
-          className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 active:scale-95 transition-all text-[11px] font-medium"
-        >
-          <FolderGit2 size={18} />
-          <span>Projects</span>
-        </a>
-        <a 
-          href="#contact" 
-          className="flex flex-col items-center gap-1 p-2 text-cyan-400 active:scale-95 transition-all text-[11px] font-bold"
-        >
-          <Mail size={18} />
-          <span>Contact</span>
-        </a>
-      </div>
+      {(() => {
+        const navItems = [
+          { id: 'home',     href: '#',        icon: <Home size={20} />,       label: 'Home' },
+          { id: 'about',    href: '#about',    icon: <User size={20} />,       label: 'About' },
+          { id: 'projects', href: '#projects', icon: <FolderGit2 size={20} />, label: 'Projects' },
+          { id: 'contact',  href: '#contact',  icon: <Mail size={20} />,       label: 'Contact' },
+        ];
+        return (
+          <div className="md:hidden fixed bottom-4 left-4 right-4 z-40 glass-panel rounded-2xl p-1.5 flex items-center justify-around shadow-2xl backdrop-blur-2xl bg-slate-950/90 border border-white/15">
+            {navItems.map(({ id, href, icon, label }) => {
+              const isActive = activeSection === id;
+              return (
+                <a
+                  key={id}
+                  href={href}
+                  className={[
+                    'relative flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl transition-all duration-300 text-[10px] font-semibold',
+                    isActive
+                      ? 'text-cyan-400 bg-cyan-500/15 scale-105'
+                      : 'text-slate-500 hover:text-slate-300 active:scale-95',
+                  ].join(' ')}
+                >
+                  {isActive && (
+                    <span className="absolute -top-px left-1/2 -translate-x-1/2 w-6 h-0.5 bg-cyan-400 rounded-full" />
+                  )}
+                  {icon}
+                  <span>{label}</span>
+                </a>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Private Admin Dashboard Modal (PIN Protected, Lazy Loaded) */}
       <Suspense fallback={null}>
