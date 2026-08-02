@@ -41,6 +41,8 @@ function LinkedinIcon({ size = 18 }) {
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
@@ -72,12 +74,42 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    logActivity('Submit Contact Form', `Admin mengirim pesan (Nama: ${formData.name}, Email: ${formData.email})`);
-    setFormSubmitted(true);
-    setFormData({ name: '', email: '', message: '' });
-    setTimeout(() => setFormSubmitted(false), 5000);
+    setIsSending(true);
+    setFormError(false);
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: import.meta.env.VITE_WEB3FORMS_KEY || '00000000-0000-0000-0000-000000000000',
+          subject: `[Portfolio] Pesan Baru dari ${formData.name}`,
+          from_name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          botcheck: '',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        logActivity('Submit Contact Form', `Pesan masuk dari ${formData.name} (${formData.email}) — Dikirim ke email admin`);
+        setFormSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setFormSubmitted(false), 6000);
+      } else {
+        setFormError(true);
+        setTimeout(() => setFormError(false), 5000);
+      }
+    } catch (err) {
+      setFormError(true);
+      setTimeout(() => setFormError(false), 5000);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -499,10 +531,23 @@ export default function App() {
 
                 <button 
                   type="submit" 
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-bold text-base shadow-lg shadow-indigo-500/30 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                  disabled={isSending}
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-bold text-base shadow-lg shadow-indigo-500/30 hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  <Send size={18} />
-                  <span>{t.contactSubmit}</span>
+                  {isSending ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                      </svg>
+                      <span>Mengirim...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={18} />
+                      <span>{t.contactSubmit}</span>
+                    </>
+                  )}
                 </button>
               </form>
 
@@ -510,6 +555,13 @@ export default function App() {
                 <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-center text-sm flex items-center justify-center gap-2 animate-fadeIn">
                   <CheckCircle size={18} />
                   <span>{t.contactSuccess}</span>
+                </div>
+              )}
+
+              {formError && (
+                <div className="p-4 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-center text-sm flex items-center justify-center gap-2 animate-fadeIn">
+                  <X size={18} />
+                  <span>Gagal mengirim pesan. Coba lagi atau hubungi langsung via email.</span>
                 </div>
               )}
             </div>
