@@ -142,8 +142,8 @@ export default function App() {
             </div>
 
             {/* Subtext */}
-            <p className="max-w-2xl mx-auto text-slate-400 text-base sm:text-lg leading-relaxed font-normal">
-              Membangun pengalaman web modern, interaktif, dan performa tinggi dengan kombinasi keindahan visual 3D serta arsitektur kode yang bersih.
+            <p className="max-w-2xl mx-auto text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
+              Saya membantu bisnis & kreator mewujudkan produk digital impian—menghadirkan pengalaman web 3D interaktif yang memukau, super cepat, dan berkonversi tinggi untuk memikat pelanggan Anda.
             </p>
 
             {/* Action CTAs */}
