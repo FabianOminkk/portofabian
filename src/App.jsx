@@ -119,17 +119,35 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Web3Forms API key — must be set in Vercel env vars as VITE_WEB3FORMS_KEY
+  const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
+  const hasValidKey = WEB3FORMS_KEY &&
+    WEB3FORMS_KEY !== 'your_access_key_here' &&
+    WEB3FORMS_KEY !== '00000000-0000-0000-0000-000000000000';
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsSending(true);
     setFormError(false);
+
+    // --- Guard: no valid API key configured ---
+    if (!hasValidKey) {
+      // Open default mail client as reliable fallback
+      const subject  = encodeURIComponent(`[Portfolio] Pesan dari ${formData.name}`);
+      const body     = encodeURIComponent(
+        `Nama: ${formData.name}\nEmail: ${formData.email}\n\nPesan:\n${formData.message}`
+      );
+      window.location.href = `mailto:abitamfan6@gmail.com?subject=${subject}&body=${body}`;
+      return;
+    }
+
+    setIsSending(true);
 
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          access_key: import.meta.env.VITE_WEB3FORMS_KEY || '00000000-0000-0000-0000-000000000000',
+          access_key: WEB3FORMS_KEY,
           subject: `[Portfolio] Pesan Baru dari ${formData.name}`,
           from_name: formData.name,
           email: formData.email,
@@ -138,20 +156,27 @@ export default function App() {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
       const result = await response.json();
 
       if (result.success) {
-        logActivity('Submit Contact Form', `Pesan masuk dari ${formData.name} (${formData.email}) — Dikirim ke email admin`);
+        logActivity('Submit Contact Form', `Pesan masuk dari ${formData.name} (${formData.email})`);
         setFormSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
         setTimeout(() => setFormSubmitted(false), 6000);
       } else {
+        // Web3Forms returned success:false — show specific message if available
+        console.error('Web3Forms error:', result);
         setFormError(true);
-        setTimeout(() => setFormError(false), 5000);
+        setTimeout(() => setFormError(false), 6000);
       }
     } catch (err) {
+      console.error('Form submit error:', err);
       setFormError(true);
-      setTimeout(() => setFormError(false), 5000);
+      setTimeout(() => setFormError(false), 6000);
     } finally {
       setIsSending(false);
     }
@@ -591,10 +616,15 @@ export default function App() {
                       </svg>
                       <span>Mengirim...</span>
                     </>
-                  ) : (
+                  ) : hasValidKey ? (
                     <>
                       <Send size={18} />
                       <span>{t.contactSubmit}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mail size={18} />
+                      <span>Kirim via Email</span>
                     </>
                   )}
                 </button>
@@ -608,9 +638,17 @@ export default function App() {
               )}
 
               {formError && (
-                <div className="p-4 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-center text-sm flex items-center justify-center gap-2 animate-fadeIn">
-                  <X size={18} />
-                  <span>Gagal mengirim pesan. Coba lagi atau hubungi langsung via email.</span>
+                <div className="p-4 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-center text-sm flex flex-col items-center gap-2 animate-fadeIn">
+                  <div className="flex items-center gap-2">
+                    <X size={18} />
+                    <span>Gagal mengirim. Coba lagi atau</span>
+                  </div>
+                  <a
+                    href="mailto:abitamfan6@gmail.com"
+                    className="underline font-semibold hover:text-rose-200 transition-colors"
+                  >
+                    hubungi langsung via email ↗
+                  </a>
                 </div>
               )}
             </div>
