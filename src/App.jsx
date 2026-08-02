@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ThreeBackground from './components/ThreeBackground';
+import AdminDashboard from './components/AdminDashboard';
+import { trackPageView, logActivity } from './utils/analytics';
 import { 
   Code2, 
   Boxes, 
@@ -13,7 +15,8 @@ import {
   Sparkles,
   Layers,
   Cpu,
-  Globe
+  Globe,
+  Lock
 } from 'lucide-react';
 
 function GithubIcon({ size = 18 }) {
@@ -44,9 +47,26 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+  useEffect(() => {
+    // Automatically track Page View on initial load
+    trackPageView();
+
+    // Keyboard shortcut: Ctrl + Shift + A toggles Private Admin Panel
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        setIsAdminOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    logActivity('Submit Contact Form', `Nama: ${formData.name}, Email: ${formData.email}`);
     setFormSubmitted(true);
     setFormData({ name: '', email: '', message: '' });
     setTimeout(() => setFormSubmitted(false), 5000);
@@ -470,19 +490,50 @@ export default function App() {
       {/* Footer */}
       <footer className="py-8 border-t border-white/10 px-4 sm:px-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>&copy; 2026 Fabian Nazhif. All rights reserved. Built with React & Three.js.</p>
+          <div className="flex items-center gap-2">
+            <p>&copy; 2026 Fabian Nazhif. All rights reserved. Built with React & Three.js.</p>
+            {/* Secret Private Admin Button (Clickable lock) */}
+            <button 
+              onClick={() => setIsAdminOpen(true)}
+              className="text-slate-600 hover:text-indigo-400 transition-colors p-1"
+              title="Private Admin Panel (PIN Protected)"
+            >
+              <Lock size={12} />
+            </button>
+          </div>
+
           <div className="flex items-center gap-6 text-slate-400">
-            <a href="https://github.com/FabianOminkk" target="_blank" rel="noreferrer" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" title="GitHub FabianOminkk">
+            <a 
+              href="https://github.com/FabianOminkk" 
+              target="_blank" 
+              rel="noreferrer" 
+              onClick={() => logActivity('Click GitHub', 'Pengunjung mengklik link GitHub')}
+              className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" 
+              title="GitHub FabianOminkk"
+            >
               <GithubIcon size={18} />
               <span className="text-xs">GitHub</span>
             </a>
-            <a href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" target="_blank" rel="noreferrer" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" title="LinkedIn Fabian Nazhif">
+            <a 
+              href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" 
+              target="_blank" 
+              rel="noreferrer" 
+              onClick={() => logActivity('Click LinkedIn', 'Pengunjung mengklik link LinkedIn')}
+              className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" 
+              title="LinkedIn Fabian Nazhif"
+            >
               <LinkedinIcon size={18} />
               <span className="text-xs">LinkedIn</span>
             </a>
           </div>
         </div>
       </footer>
+
+      {/* Private Admin Dashboard Modal (PIN Protected) */}
+      <AdminDashboard 
+        isOpen={isAdminOpen} 
+        onClose={() => setIsAdminOpen(false)} 
+      />
     </div>
   );
 }
