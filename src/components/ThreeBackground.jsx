@@ -123,9 +123,10 @@ export default function ThreeBackground() {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // ─── Mobile: Touch Parallax (fallback) ───────────────────────────
+    // ─── Mobile: Touch Parallax (fallback only when gyro unavailable) ──
     const handleTouchMove = (e) => {
-      if (!isMobile || !e.touches?.[0]) return;
+      // Skip touch parallax if gyro is active — gyro takes priority
+      if (!isMobile || gyroEnabled || !e.touches?.[0]) return;
       const cx = window.innerWidth  / 2;
       const cy = window.innerHeight / 2;
       targetX = (e.touches[0].clientX - cx) * 0.0008;
@@ -144,12 +145,13 @@ export default function ThreeBackground() {
       const beta  = e.beta  ?? 0; // front/back  –180…180
       const gamma = e.gamma ?? 0; // left/right  –90…90
 
-      // Clamp and normalise to a small rotation range (±0.25 rad)
-      const clampedBeta  = Math.max(-30, Math.min(30, beta  - 45)); // subtract ~45° default hold angle
-      const clampedGamma = Math.max(-30, Math.min(30, gamma));
+      // Subtract ~45° default hold angle so neutral phone position = no tilt
+      const clampedBeta  = Math.max(-35, Math.min(35, beta  - 45));
+      const clampedGamma = Math.max(-35, Math.min(35, gamma));
 
-      targetY = (clampedGamma / 30) * 0.25;  // X axis tilt (left/right)
-      targetX = (clampedBeta  / 30) * 0.20;  // Y axis tilt (front/back)
+      // Map to rotation radians — increased to ±0.35 for a livelier feel
+      targetY = (clampedGamma / 35) * 0.35;  // left/right tilt → Y scene rotation
+      targetX = (clampedBeta  / 35) * 0.28;  // front/back tilt → X scene rotation
 
       gyroEnabled = true;
     };
