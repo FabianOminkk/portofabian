@@ -156,11 +156,22 @@ export default function App() {
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
               <a 
-                href="#about" 
-                className="px-8 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center gap-2"
+                href="https://github.com/FabianOminkk" 
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center gap-2 hover:text-cyan-400"
               >
-                <User size={18} />
-                <span>Tentang Saya</span>
+                <GithubIcon size={20} />
+                <span>GitHub</span>
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" 
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center gap-2 hover:text-cyan-400"
+              >
+                <LinkedinIcon size={20} />
+                <span>LinkedIn</span>
               </a>
             </div>
 
@@ -459,11 +470,16 @@ export default function App() {
       {/* Footer */}
       <footer className="py-8 border-t border-white/10 px-4 sm:px-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>&copy; 2026 Fabian. All rights reserved. Built with React & Three.js.</p>
+          <p>&copy; 2026 Fabian Nazhif. All rights reserved. Built with React & Three.js.</p>
           <div className="flex items-center gap-6 text-slate-400">
-            <a href="https://github.com/FabianOminkk" target="_blank" rel="noreferrer" className="hover:text-white transition-colors" title="GitHub"><GithubIcon size={18} /></a>
-            <a href="#" className="hover:text-white transition-colors" title="LinkedIn"><LinkedinIcon size={18} /></a>
-            <a href="#" className="hover:text-white transition-colors" title="Twitter / X"><TwitterIcon size={18} /></a>
+            <a href="https://github.com/FabianOminkk" target="_blank" rel="noreferrer" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" title="GitHub FabianOminkk">
+              <GithubIcon size={18} />
+              <span className="text-xs">GitHub</span>
+            </a>
+            <a href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" target="_blank" rel="noreferrer" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 font-medium" title="LinkedIn Fabian Nazhif">
+              <LinkedinIcon size={18} />
+              <span className="text-xs">LinkedIn</span>
+            </a>
           </div>
         </div>
       </footer>
