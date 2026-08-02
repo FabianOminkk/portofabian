@@ -87,43 +87,36 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Track active section for mobile bottom nav via IntersectionObserver
+  // Track active section for mobile bottom nav via scroll position
   useEffect(() => {
-    const sectionIds = ['contact', 'projects', 'about'];
-    const observers = [];
+    const handleScroll = () => {
+      // Get the top offset of each named section
+      const sections = [
+        { id: 'home',     el: document.getElementById('home') },
+        { id: 'about',    el: document.getElementById('about') },
+        { id: 'projects', el: document.getElementById('projects') },
+        { id: 'contact',  el: document.getElementById('contact') },
+      ];
 
-    // Default to 'home' — only override when a named section is >= 40% visible
-    const visibilityMap = {};
+      // scrollY + 40% of viewport height as the "trigger line"
+      const triggerY = window.scrollY + window.innerHeight * 0.4;
+      let current = 'home';
 
-    const updateActive = () => {
-      // Priority order: whichever section is most visible wins
-      // If none are sufficiently visible, fall back to 'home'
-      let best = null;
-      let bestRatio = 0.15; // threshold
-      for (const id of sectionIds) {
-        if ((visibilityMap[id] || 0) > bestRatio) {
-          bestRatio = visibilityMap[id];
-          best = id;
+      for (const { id, el } of sections) {
+        if (!el) continue;
+        // offsetTop gives position relative to document
+        if (triggerY >= el.offsetTop) {
+          current = id;
         }
       }
-      setActiveSection(best || 'home');
+
+      setActiveSection(current);
     };
 
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          visibilityMap[id] = entry.intersectionRatio;
-          updateActive();
-        },
-        { threshold: [0, 0.15, 0.3, 0.5, 0.75, 1.0] }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-
-    return () => observers.forEach((obs) => obs.disconnect());
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once on mount to set the correct initial state
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleFormSubmit = async (e) => {
@@ -242,7 +235,7 @@ export default function App() {
       {/* Main Content */}
       <main>
         {/* Hero Section */}
-        <section className="min-h-screen relative flex items-center justify-center px-4 sm:px-6 pt-24 pb-16 overflow-hidden">
+        <section id="home" className="min-h-screen relative flex items-center justify-center px-4 sm:px-6 pt-24 pb-16 overflow-hidden">
           <div className="max-w-4xl mx-auto text-center z-10 space-y-8">
             {/* Status Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-white/10 text-xs sm:text-sm font-medium text-slate-300">
