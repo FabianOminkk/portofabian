@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ThreeBackground from './components/ThreeBackground';
 import AdminDashboard from './components/AdminDashboard';
 import LanguageSelector from './components/LanguageSelector';
+import IntroScreen from './components/IntroScreen';
 import { trackPageView, logActivity, initIPFetcher } from './utils/analytics';
 import { translations } from './utils/i18n';
 import { 
@@ -45,6 +46,16 @@ export default function App() {
   const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+  // Show intro only once per browser session
+  const [showIntro, setShowIntro] = useState(() => {
+    return !sessionStorage.getItem('fabian_intro_seen');
+  });
+
+  const handleIntroDone = () => {
+    sessionStorage.setItem('fabian_intro_seen', '1');
+    setShowIntro(false);
+  };
 
   // Multi-Language State (Default: Bahasa Indonesia, remembers choice in localStorage)
   const [currentLang, setCurrentLang] = useState(() => localStorage.getItem('fabian_lang') || 'id');
@@ -114,6 +125,8 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Cinematic Intro Screen (first visit per session) */}
+      {showIntro && <IntroScreen onComplete={handleIntroDone} />}
       {/* 3D WebGL Background */}
       <ThreeBackground />
 
