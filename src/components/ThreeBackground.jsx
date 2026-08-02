@@ -8,6 +8,9 @@ export default function ThreeBackground() {
     const container = mountRef.current;
     if (!container) return;
 
+    // Detect if Mobile Device
+    const isMobile = window.innerWidth < 640;
+
     // Scene, Camera, Renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -16,18 +19,20 @@ export default function ThreeBackground() {
       0.1,
       1000
     );
-    camera.position.z = 15;
+
+    // Adjust camera distance for mobile vs desktop
+    camera.position.z = isMobile ? 18 : 15;
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !isMobile, // Disable anti-alias on low-end mobile for maximum performance
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     container.appendChild(renderer.domElement);
 
-    // 1. Particle Cloud Field
-    const particleCount = 3000;
+    // 1. Particle Cloud Field (Slightly fewer particles on mobile for battery savings)
+    const particleCount = isMobile ? 1800 : 3000;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
@@ -46,7 +51,7 @@ export default function ThreeBackground() {
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.08,
+      size: isMobile ? 0.09 : 0.08,
       vertexColors: true,
       transparent: true,
       opacity: 0.7,
@@ -56,8 +61,10 @@ export default function ThreeBackground() {
     const particleField = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particleField);
 
-    // 2. Wireframe Torus Knot (Centerpiece)
-    const knotGeometry = new THREE.TorusKnotGeometry(4.5, 1.2, 128, 32);
+    // 2. Wireframe Torus Knot (Adjust scale for mobile)
+    const knotRadius = isMobile ? 3.5 : 4.5;
+    const knotTube = isMobile ? 0.9 : 1.2;
+    const knotGeometry = new THREE.TorusKnotGeometry(knotRadius, knotTube, isMobile ? 96 : 128, 32);
     const knotMaterial = new THREE.MeshBasicMaterial({
       color: 0x6366f1,
       wireframe: true,
@@ -68,7 +75,7 @@ export default function ThreeBackground() {
     scene.add(torusKnot);
 
     // 3. Secondary Floating Geometries
-    const icoGeometry = new THREE.IcosahedronGeometry(2, 1);
+    const icoGeometry = new THREE.IcosahedronGeometry(isMobile ? 1.5 : 2, 1);
     const icoMesh1 = new THREE.Mesh(
       icoGeometry,
       new THREE.MeshBasicMaterial({
@@ -78,7 +85,7 @@ export default function ThreeBackground() {
         opacity: 0.25,
       })
     );
-    icoMesh1.position.set(-9, 5, -4);
+    icoMesh1.position.set(isMobile ? -5 : -9, isMobile ? 6 : 5, -4);
     scene.add(icoMesh1);
 
     const icoMesh2 = new THREE.Mesh(
@@ -90,10 +97,10 @@ export default function ThreeBackground() {
         opacity: 0.2,
       })
     );
-    icoMesh2.position.set(10, -6, -4);
+    icoMesh2.position.set(isMobile ? 5 : 10, isMobile ? -7 : -6, -4);
     scene.add(icoMesh2);
 
-    // Mouse Interaction Parallax
+    // Mouse & Touch Parallax Interaction
     let mouseX = 0;
     let mouseY = 0;
     let targetX = 0;
@@ -106,14 +113,26 @@ export default function ThreeBackground() {
       mouseY = (e.clientY - windowHalfY) * 0.0005;
     };
 
+    const handleTouchMove = (e) => {
+      if (e.touches && e.touches[0]) {
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+        mouseX = (e.touches[0].clientX - windowHalfX) * 0.0008;
+        mouseY = (e.touches[0].clientY - windowHalfY) * 0.0008;
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // Resize Handler
     const handleResize = () => {
+      const mobileNow = window.innerWidth < 640;
       camera.aspect = window.innerWidth / window.innerHeight;
+      camera.position.z = mobileNow ? 18 : 15;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobileNow ? 1.5 : 2));
     };
 
     window.addEventListener('resize', handleResize);
@@ -136,7 +155,7 @@ export default function ThreeBackground() {
       icoMesh2.rotation.x = -elapsedTime * 0.2;
       icoMesh2.rotation.y = -elapsedTime * 0.3;
 
-      // Mouse Parallax Smooth Interpolation
+      // Smooth Parallax Interpolation
       targetX += (mouseX - targetX) * 0.05;
       targetY += (mouseY - targetY) * 0.05;
 
@@ -150,10 +169,11 @@ export default function ThreeBackground() {
 
     animate();
 
-    // Cleanup on component unmount
+    // Cleanup on unmount
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', handleResize);
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);

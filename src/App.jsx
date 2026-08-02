@@ -167,10 +167,10 @@ export default function App() {
             </p>
 
             {/* Action CTAs */}
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
               <a 
                 href="#projects" 
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-semibold text-base shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all flex items-center gap-3 group"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-semibold text-base shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all flex items-center justify-center gap-3 group"
               >
                 <span>Lihat Portfolio</span>
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -179,7 +179,7 @@ export default function App() {
                 href="https://github.com/FabianOminkk" 
                 target="_blank"
                 rel="noreferrer"
-                className="px-6 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center gap-2 hover:text-cyan-400"
+                className="w-full sm:w-auto px-6 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center justify-center gap-2 hover:text-cyan-400"
               >
                 <GithubIcon size={20} />
                 <span>GitHub</span>
@@ -188,7 +188,7 @@ export default function App() {
                 href="https://www.linkedin.com/in/fabian-nazhif-29997a346/" 
                 target="_blank"
                 rel="noreferrer"
-                className="px-6 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center gap-2 hover:text-cyan-400"
+                className="w-full sm:w-auto px-6 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all flex items-center justify-center gap-2 hover:text-cyan-400"
               >
                 <LinkedinIcon size={20} />
                 <span>LinkedIn</span>
