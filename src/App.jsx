@@ -51,13 +51,10 @@ export default function App() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-  // Show intro only once per browser session
-  const [showIntro, setShowIntro] = useState(() => {
-    return !sessionStorage.getItem('fabian_intro_seen');
-  });
+  // Show cinematic intro splash screen on initial page load (2.5s duration)
+  const [showIntro, setShowIntro] = useState(true);
 
   const handleIntroDone = () => {
-    sessionStorage.setItem('fabian_intro_seen', '1');
     setShowIntro(false);
   };
 
